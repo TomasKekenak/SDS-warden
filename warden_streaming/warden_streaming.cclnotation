@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<com.sybase.cep.studio.emf.notation:NotationModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:com.sybase.cep.studio.emf.notation="http://com.sybase.cep.studio.emf.notation">
+  <diagrams title="Diagram">
+    <semanticElement href="warden_streaming.ccl#/"/>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="41" yLoc="40" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#NEWSTREAM"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="41" yLoc="706" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#File_Hadoop_JSON_Input1"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.2"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="450" yLoc="658" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.1/@outgoingConnectors.0 //@diagrams.0/@children.15/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#InputStream1"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.3"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="894" yLoc="584" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.2/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#Warden_input_test1_schema1"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="41" yLoc="1610" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.16/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#EVENT_STREAM"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="2555" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#SOURCE_OR_TARGET_STREAM"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.24"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="41" yLoc="262" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#ATTACH_STREAM"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="41" yLoc="484" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#NODE_STREAM"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="41" yLoc="1944" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#ARRAY_STREAM"/>
+      <outgoingConnectors target="//@diagrams.0/@children.10"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="41" yLoc="861" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#EVENT_schema1"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="6" diagram="//@diagrams.0" xLoc="450" yLoc="1876" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.8/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#ARRAY_TYPE_Splitter"/>
+      <outgoingConnectors target="//@diagrams.0/@children.31"/>
+      <outgoingConnectors target="//@diagrams.0/@children.32"/>
+      <outgoingConnectors target="//@diagrams.0/@children.33"/>
+      <outgoingConnectors target="//@diagrams.0/@children.34"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="41" yLoc="1159" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#ALT_NAMES_schema1"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="41" yLoc="1374" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#SOURCE_OR_TARGET_TYPE_schema1"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="1272" yLoc="1757" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.31/@outgoingConnectors.0 //@diagrams.0/@children.19/@outgoingConnectors.1">
+      <semanticElement href="warden_streaming.ccl#Event_array_join"/>
+      <outgoingConnectors target="//@diagrams.0/@children.22"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="1272" yLoc="2128" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.32/@outgoingConnectors.0 //@diagrams.0/@children.23/@outgoingConnectors.1">
+      <semanticElement href="warden_streaming.ccl#SourceOrTarget_join"/>
+      <outgoingConnectors target="//@diagrams.0/@children.21"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="799" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#Test_adap"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.2"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="450" yLoc="1700" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#EVENT_OUTPUT"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.4"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2455" yLoc="1714" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#ALT_NAMES_OUTPUT"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.25"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2455" yLoc="2082" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#SOURCE_OR_TARGET_TYPE_OUTPUT"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.27"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="1621" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#Event_ref"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.20"/>
+      <outgoingConnectors target="//@diagrams.0/@children.13"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="1272" yLoc="1459" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.19/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#EVENT_schema2"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="1649" yLoc="2125" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.14/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#SourceOrTarget_array_splitter"/>
+      <outgoingConnectors target="//@diagrams.0/@children.27"/>
+      <outgoingConnectors target="//@diagrams.0/@children.28"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="1649" yLoc="1754" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.13/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#Event_array_Splitter"/>
+      <outgoingConnectors target="//@diagrams.0/@children.25"/>
+      <outgoingConnectors target="//@diagrams.0/@children.26"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="2382" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#Source_or_target_ref"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.24"/>
+      <outgoingConnectors target="//@diagrams.0/@children.14"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" style="2" diagram="//@diagrams.0" xLoc="1272" yLoc="2418" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.5/@outgoingConnectors.0 //@diagrams.0/@children.23/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#SOURCE_OR_TARGET_schema1"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2015" yLoc="1722" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.22/@outgoingConnectors.0 //@diagrams.0/@children.17/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#ALT_NAMES_Splitter_Output"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2015" yLoc="1869" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.22/@outgoingConnectors.1 //@diagrams.0/@children.29/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#CATEGORY_Splitter_Output"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2015" yLoc="2090" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.21/@outgoingConnectors.0 //@diagrams.0/@children.18/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#SOURCE_OR_TARGET_TYPE_Splitter_Output"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2015" yLoc="2237" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.21/@outgoingConnectors.1 //@diagrams.0/@children.30/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#IP4_Splitter_Output"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2455" yLoc="1869" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#CATEGORY_OUTPUT"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.26"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="2455" yLoc="2237" width="-1" height="-1">
+      <semanticElement href="warden_streaming.ccl#IP4_OUTPUT"/>
+      <outgoingConnectors style="4" target="//@diagrams.0/@children.28"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="1794" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.10/@outgoingConnectors.0">
+      <semanticElement href="warden_streaming.ccl#Event_Splitter_Output"/>
+      <outgoingConnectors target="//@diagrams.0/@children.13"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="1941" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.10/@outgoingConnectors.1">
+      <semanticElement href="warden_streaming.ccl#SourceOrTarget_Splitter_Output"/>
+      <outgoingConnectors target="//@diagrams.0/@children.14"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="2088" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.10/@outgoingConnectors.2">
+      <semanticElement href="warden_streaming.ccl#Attach_Splitter_Output"/>
+    </children>
+    <children xsi:type="com.sybase.cep.studio.emf.notation:Node" diagram="//@diagrams.0" xLoc="894" yLoc="2235" width="-1" height="-1" incomingConnectors="//@diagrams.0/@children.10/@outgoingConnectors.3">
+      <semanticElement href="warden_streaming.ccl#Node_Splitter_Output"/>
+    </children>
+  </diagrams>
+  <semanticElement href="warden_streaming.ccl#/"/>
+</com.sybase.cep.studio.emf.notation:NotationModel>

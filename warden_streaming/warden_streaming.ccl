@@ -1,0 +1,564 @@
+CREATE SCHEMA Warden_input_test1_schema1 (
+	Category string ,
+	Format string ) ;
+CREATE SCHEMA Event_schema (
+	EVENT_ID_PK long ,
+	FORMAT string ,
+	ID string ,
+	CREATETIME seconddate ,
+	DETECTTIME seconddate ,
+	EVENTTIME seconddate ,
+	CEASETIME seconddate ,
+	WINSTARTTIME seconddate ,
+	WINENDTIME seconddate ,
+	CONNCOUNT integer ,
+	FLOWCOUNT integer ,
+	PACKETCOUNT integer ,
+	BYTECOUNT integer ,
+	CONFIDENCE double ,
+	DESCRIPTION string ,
+	NOTE string ) ;
+CREATE SCHEMA Source_or_target_schema (
+	ID_TEMPORARY string ,
+	"SOURCE_OR_TARGET" string ,
+	"NOTE" string ,
+	"SPOOFED" boolean ,
+	"IMPRECISE" boolean ,
+	"ANONYMISED" boolean ) ;
+CREATE SCHEMA Attach_schema (
+	EVENT_ID_PK string ,
+	ID long ,
+	ID_TEMPORARY string ,
+	"HANDLE" string ,
+	"SIZE" INTEGER ,
+	"NOTE" string ,
+	"CONTENTTYPE" string ,
+	"CONTENTCHARSET" string ,
+	"CONTENTENCODING" string ,
+	"CONTENT" string ) ;
+CREATE SCHEMA Node_schema (
+	EVENT_ID_PK string ,
+	ID long ,
+	ID_TEMPORARY string ,
+	"NAME" string ,
+	"AGGRWIN" string ,
+	"NOTE" string ) ;
+CREATE SCHEMA Array_schema (
+	ID_TEMPORARY string ,
+	TABLE_TYPE string,
+	TABLE_NAME string ,
+	VALUE string ) ;
+CREATE SCHEMA EVENT_schema1 (
+	FORMAT string ,
+	ID string ,
+	CREATETIME bigdatetime ,
+	DETECTTIME bigdatetime ,
+	EVENTTIME bigdatetime ,
+	CEASETIME bigdatetime ,
+	WINSTARTTIME bigdatetime ,
+	WINENDTIME bigdatetime ,
+	CONNCOUNT integer ,
+	FLOWCOUNT integer ,
+	PACKETCOUNT integer ,
+	BYTECOUNT integer ,
+	CONFIDENCE integer ,
+	DESCRIPTION string ,
+	NOTE string ) ;
+CREATE SCHEMA ALT_NAMES_schema1 (
+	VALUE string ,
+	EVENT_ID_PK long ) ;
+CREATE SCHEMA SOURCE_OR_TARGET_TYPE_schema1 (
+	VALUE string ,
+	ID long ) ;
+CREATE SCHEMA EVENT_schema2 (
+	EVENT_ID_PK long ,
+	FORMAT string ,
+	ID string ,
+	CREATETIME bigdatetime ,
+	DETECTTIME bigdatetime ,
+	EVENTTIME bigdatetime ,
+	CEASETIME bigdatetime ,
+	WINSTARTTIME bigdatetime ,
+	WINENDTIME bigdatetime ,
+	CONNCOUNT integer ,
+	FLOWCOUNT integer ,
+	PACKETCOUNT integer ,
+	BYTECOUNT integer ,
+	CONFIDENCE double ,
+	DESCRIPTION string ,
+	NOTE string ) ;
+CREATE SCHEMA SOURCE_OR_TARGET_schema1 (
+	EVENT_ID_PK string ,
+	ID long ,
+	ID_TEMPORARY string,
+	SOURCE_OR_TARGET string ,
+	NOTE string ,
+	SPOOFED boolean ,
+	IMPRECISE boolean ,
+	ANONYMISED boolean ) ;
+CREATE INPUT STREAM NEWSTREAM SCHEMA (
+	Category string ,
+	Event_time seconddate ,
+	Target_port integer ,
+	Target_ip string ,
+	Target_protocol string ) ;
+CREATE INPUT STREAM InputStream1 SCHEMA Warden_input_test1_schema1 ;
+CREATE INPUT STREAM EVENT_STREAM SCHEMA Event_schema ;
+CREATE INPUT STREAM SOURCE_OR_TARGET_STREAM SCHEMA SOURCE_OR_TARGET_schema1 ;
+CREATE INPUT STREAM ARRAY_STREAM SCHEMA Array_schema ;
+CREATE INPUT STREAM ATTACH_STREAM SCHEMA Attach_schema ;
+CREATE INPUT STREAM NODE_STREAM SCHEMA Node_schema ;
+CREATE REFERENCE Event_ref SCHEMA EVENT_schema2
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	source = 'EVENT' ,
+	sourceSchema = 'WARDEN_SCHEMA' ;
+CREATE OUTPUT SPLITTER ARRAY_TYPE_Splitter
+AS
+	WHEN ARRAY_STREAM.TABLE_TYPE IN ( 'Event') THEN Event_Splitter_Output
+	WHEN ARRAY_STREAM.TABLE_TYPE IN ( 'Source', 'Target' ) THEN SourceOrTarget_Splitter_Output
+	WHEN ARRAY_STREAM.TABLE_TYPE IN ('Attach') THEN Attach_Splitter_Output
+	WHEN ARRAY_STREAM.TABLE_TYPE IN ('Node') THEN Node_Splitter_Output
+	SELECT
+	ARRAY_STREAM.ID_TEMPORARY ,
+	ARRAY_STREAM.TABLE_NAME ,
+	ARRAY_STREAM.VALUE ,
+	ARRAY_STREAM.TABLE_TYPE TABLE_TYPE FROM ARRAY_STREAM ;
+
+
+CREATE REFERENCE Source_or_target_ref SCHEMA SOURCE_OR_TARGET_schema1
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	source = 'SOURCE_OR_TARGET' ,
+	sourceSchema = 'WARDEN_SCHEMA' ;
+
+CREATE REFERENCE Attach_ref SCHEMA Attach_schema
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	source = 'ATTACH' ,
+	sourceSchema = 'WARDEN_SCHEMA' ;
+
+
+CREATE REFERENCE Node_ref SCHEMA Node_schema
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	source = 'NODE' ,
+	sourceSchema = 'WARDEN_SCHEMA' ;
+
+
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM SourceOrTarget_Event_join
+AS
+	SELECT
+	Event_ref.EVENT_ID_PK,
+	SOURCE_OR_TARGET_STREAM.ID ,
+	SOURCE_OR_TARGET_STREAM.ID_TEMPORARY,
+	SOURCE_OR_TARGET_STREAM.SOURCE_OR_TARGET ,
+	SOURCE_OR_TARGET_STREAM.NOTE ,
+	SOURCE_OR_TARGET_STREAM.SPOOFED ,
+	SOURCE_OR_TARGET_STREAM.IMPRECISE ,
+	SOURCE_OR_TARGET_STREAM.ANONYMISED FROM SOURCE_OR_TARGET_STREAM JOIN Event_ref
+	ON SOURCE_OR_TARGET_STREAM.EVENT_ID_PK = Event_ref.ID;
+
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM Attach_Event_join
+AS
+	SELECT
+	Event_ref.EVENT_ID_PK ,
+	ATTACH_STREAM.ID_TEMPORARY ,
+	ATTACH_STREAM.HANDLE ,
+	ATTACH_STREAM.SIZE ,
+	ATTACH_STREAM.NOTE ,
+	ATTACH_STREAM.CONTENTTYPE ,
+	ATTACH_STREAM.CONTENTCHARSET ,
+	ATTACH_STREAM.CONTENTENCODING ,
+	ATTACH_STREAM.CONTENT  FROM ATTACH_STREAM JOIN Event_ref
+	ON ATTACH_STREAM.EVENT_ID_PK = Event_ref.ID;
+	
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM Node_Event_join
+AS
+	SELECT
+	Event_ref.EVENT_ID_PK ,
+	NODE_STREAM.ID_TEMPORARY ,
+	NODE_STREAM.NAME ,
+	NODE_STREAM.AGGRWIN ,
+	NODE_STREAM.NOTE  FROM NODE_STREAM JOIN Event_ref
+	ON NODE_STREAM.EVENT_ID_PK = Event_ref.ID;
+
+
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM Event_array_join
+AS
+	SELECT
+		Event_Splitter_Output.ID_TEMPORARY ID_TEMPORARY ,
+		Event_Splitter_Output.TABLE_NAME TABLE_NAME ,
+		Event_Splitter_Output.VALUE VALUE ,
+		Event_ref.EVENT_ID_PK EVENT_ID_PK FROM Event_Splitter_Output JOIN Event_ref 
+		ON Event_Splitter_Output.ID_TEMPORARY = Event_ref.ID;
+		
+
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM SourceOrTarget_array_join
+AS
+	SELECT
+		SourceOrTarget_Splitter_Output.ID_TEMPORARY ID_TEMPORARY,
+		SourceOrTarget_Splitter_Output.TABLE_NAME TABLE_NAME ,
+		SourceOrTarget_Splitter_Output.VALUE VALUE ,
+		Source_or_target_ref.ID ID
+		FROM SourceOrTarget_Splitter_Output JOIN Source_or_target_ref
+		ON SourceOrTarget_Splitter_Output.ID_TEMPORARY = Source_or_target_ref.ID_TEMPORARY ;
+
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM Attach_array_join
+AS
+	SELECT
+		Attach_Splitter_Output.ID_TEMPORARY ID_TEMPORARY ,
+		Attach_Splitter_Output.TABLE_NAME TABLE_NAME ,
+		Attach_Splitter_Output.VALUE VALUE ,
+		Attach_ref.ID ID FROM Attach_Splitter_Output JOIN Attach_ref 
+		ON Attach_Splitter_Output.ID_TEMPORARY = Attach_ref.ID_TEMPORARY;
+
+/**@SIMPLEQUERY=JOIN*/
+CREATE OUTPUT STREAM Node_array_join
+AS
+	SELECT
+		Node_Splitter_Output.ID_TEMPORARY ID_TEMPORARY ,
+		Node_Splitter_Output.TABLE_NAME TABLE_NAME ,
+		Node_Splitter_Output.VALUE VALUE ,
+		Node_ref.ID ID FROM Node_Splitter_Output JOIN Node_ref 
+		ON Node_Splitter_Output.ID_TEMPORARY = Node_ref.ID_TEMPORARY;
+
+
+CREATE OUTPUT SPLITTER Event_array_Splitter
+AS
+	WHEN Event_array_join.TABLE_NAME in ('AltNames') THEN AltNames_Splitter_Output
+	WHEN Event_array_join.TABLE_NAME in ('CorrelID') THEN CorrelID_Splitter_Output
+	WHEN Event_array_join.TABLE_NAME in ('AggrID') THEN AggrID_Splitter_Output
+	WHEN Event_array_join.TABLE_NAME in ('PredID') THEN PredID_Splitter_Output
+	WHEN Event_array_join.TABLE_NAME in ('RelID') THEN RelID_Splitter_Output
+	WHEN Event_array_join.TABLE_NAME in ('Ref') THEN Ref_Splitter_Output
+	WHEN Event_array_join.TABLE_NAME in ('Category') THEN Category_Splitter_Output
+	SELECT
+	Event_array_join.TABLE_NAME TABLE_NAME ,
+	Event_array_join.VALUE VALUE ,
+	Event_array_join.EVENT_ID_PK EVENT_ID_PK FROM Event_array_join ;
+
+CREATE OUTPUT SPLITTER SourceOrTarget_array_splitter
+AS
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('Type') THEN SOURCE_OR_TARGET_TYPE_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('HostName') THEN HostName_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('IP4') THEN IP4_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('MAC') THEN MAC_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('IP6') THEN IP6_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('Port') THEN Port_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('Proto') THEN Proto_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('URL') THEN URL_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('Email') THEN Email_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('AttachHand') THEN AttachHand_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('ASN') THEN ASN_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('Router') THEN Router_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('Netname') THEN Netname_Splitter_Output
+	WHEN SourceOrTarget_array_join.TABLE_NAME IN ('SOURCE_OR_TARGET_REF') THEN SOURCE_OR_TARGET_REF_Splitter_Output
+	SELECT
+	SourceOrTarget_array_join.TABLE_NAME TABLE_NAME ,
+	SourceOrTarget_array_join.VALUE VALUE ,
+	SourceOrTarget_array_join.ID ID FROM SourceOrTarget_array_join ;
+
+CREATE OUTPUT SPLITTER Attach_array_Splitter
+AS
+	WHEN Attach_array_join.TABLE_NAME in ('FileName') THEN FileName_Splitter_Output
+	WHEN Attach_array_join.TABLE_NAME in ('Type') THEN ATTACH_TYPE_Splitter_Output
+	WHEN Attach_array_join.TABLE_NAME in ('Hash') THEN Hash_Splitter_Output
+	WHEN Attach_array_join.TABLE_NAME in ('Ref') THEN ATTACH_REF_Splitter_Output
+	WHEN Attach_array_join.TABLE_NAME in ('ContentID') THEN ContentID_Splitter_Output
+	WHEN Attach_array_join.TABLE_NAME in ('ExternalURI') THEN ExternalURI_Splitter_Output
+	SELECT
+	Attach_array_join.TABLE_NAME TABLE_NAME ,
+	Attach_array_join.VALUE VALUE ,
+	Attach_array_join.ID ID FROM Attach_array_join ;
+
+CREATE OUTPUT SPLITTER Node_array_Splitter
+AS
+	WHEN Node_array_join.TABLE_NAME in ('Type') THEN NODE_TYPE_Splitter_Output
+	WHEN Node_array_join.TABLE_NAME in ('SW') THEN SW_Splitter_Output
+	SELECT
+	Node_array_join.TABLE_NAME TABLE_NAME ,
+	Node_array_join.VALUE VALUE ,
+	Node_array_join.ID ID FROM Node_array_join ;
+
+
+/*Event output*/
+ATTACH OUTPUT ADAPTER EVENT_OUTPUT TYPE hana_out
+TO EVENT_STREAM
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'EVENT' ,
+	permutation =
+	'FORMAT=FORMAT:ID=ID:CREATETIME=CREATETIME:DETECTTIME=DETECTTIME:EVENTTIME=EVENTTIME:CEASETIME=CEASETIME:WINSTARTTIME=WINSTARTTIME:WINENDTIME=WINENDTIME:CONNCOUNT=CONNCOUNT:FLOWCOUNT=FLOWCOUNT:PACKETCOUNT=PACKETCOUNT:BYTECOUNT=BYTECOUNT:CONFIDENCE=CONFIDENCE:DESCRIPTION=DESCRIPTION:NOTE=NOTE'
+;
+
+/*EventObjects output*/
+ATTACH OUTPUT ADAPTER SOURCE_OR_TARGET_OUTPUT TYPE hana_out
+TO SourceOrTarget_Event_join
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'SOURCE_OR_TARGET' ,
+	permutation = 'EVENT_ID_PK=EVENT_ID_PK:ID_TEMPORARY=ID_TEMPORARY:SOURCE_OR_TARGET=SOURCE_OR_TARGET:NOTE=NOTE:SPOOFED=SPOOFED:IMPRECISE=IMPRECISE:ANONYMISED=ANONYMISED' ;
+	
+ATTACH OUTPUT ADAPTER ATTACH_OUTPUT TYPE hana_out
+TO Attach_Event_join
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ATTACH' ,
+	permutation = 'EVENT_ID_PK=EVENT_ID_PK:ID_TEMPORARY=ID_TEMPORARY:HANDLE=HANDLE:SIZE=SIZE:NOTE=NOTE:CONTENTTYPE=CONTENTTYPE:CONTENTCHARSET=CONTENTCHARSET:CONTENTENCODING=CONTENTENCODING:CONTENT=CONTENT' ;
+	
+ATTACH OUTPUT ADAPTER NODE_OUTPUT TYPE hana_out
+TO Node_Event_join
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'NODE' ,
+	permutation = 'EVENT_ID_PK=EVENT_ID_PK:ID_TEMPORARY=ID_TEMPORARY:NAME=NAME:AGGRWIN=AGGRWIN:NOTE=NOTE' ;
+
+/*event arrays outputs*/
+ATTACH OUTPUT ADAPTER AltNames_OUTPUT TYPE hana_out
+TO AltNames_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ALT_NAMES' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+
+ATTACH OUTPUT ADAPTER CorrelID_OUTPUT TYPE hana_out
+TO CorrelID_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'CORREL_ID' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+	
+ATTACH OUTPUT ADAPTER AggrID_OUTPUT TYPE hana_out
+TO AggrID_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'AGGR_ID' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+	
+ATTACH OUTPUT ADAPTER PredID_OUTPUT TYPE hana_out
+TO PredID_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'PRED_ID' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+	
+ATTACH OUTPUT ADAPTER RelID_OUTPUT TYPE hana_out
+TO RelID_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'REL_ID' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+	
+ATTACH OUTPUT ADAPTER Ref TYPE hana_out
+TO Ref_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'REF' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+	
+ATTACH OUTPUT ADAPTER Category_OUTPUT TYPE hana_out
+TO Category_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'CATEGORY' ,
+	permutation = 'VALUE=VALUE:EVENT_ID_PK=EVENT_ID_PK' ;
+	
+/*source or target arrays outputs*/	
+ATTACH OUTPUT ADAPTER SOURCE_OR_TARGET_TYPE_OUTPUT TYPE hana_out
+TO SOURCE_OR_TARGET_TYPE_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'SOURCE_OR_TARGET_TYPE' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER HostName_OUTPUT TYPE hana_out
+TO HostName_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'HOSTNAME' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER IP4 TYPE hana_out
+TO IP4_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'IP4' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER MAC_OUTPUT TYPE hana_out
+TO MAC_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'MAC' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER IP6_OUTPUT TYPE hana_out
+TO IP6_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'IP6' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER Port_OUTPUT TYPE hana_out
+TO Port_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'PORT' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER Proto_OUTPUT TYPE hana_out
+TO Proto_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'PROTO' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER URL_OUTPUT TYPE hana_out
+TO URL_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'URL' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER Email_OUTPUT TYPE hana_out
+TO Email_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'EMAIL' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER AttachHand_OUTPUT TYPE hana_out
+TO AttachHand_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ATTACH_HAND' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER ASN_OUTPUT TYPE hana_out
+TO ASN_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ASN' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER Router_OUTPUT TYPE hana_out
+TO Router_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ROUTER' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+	
+ATTACH OUTPUT ADAPTER Netname_OUTPUT TYPE hana_out
+TO Netname_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'NETNAME' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER SOURCE_OR_TARGET_REF_OUTPUT TYPE hana_out
+TO SOURCE_OR_TARGET_REF_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'SOURCE_OR_TARGET_REF' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+	
+/*attach arrays outputs*/
+ATTACH OUTPUT ADAPTER FileName_OUTPUT TYPE hana_out
+TO FileName_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'FILE_NAME' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER ATTACH_TYPE_OUTPUT TYPE hana_out
+TO ATTACH_TYPE_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ATTACH_TYPE' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER Hash_OUTPUT TYPE hana_out
+TO Hash_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'HASH' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER ATTACH_REF_OUTPUT TYPE hana_out
+TO ATTACH_REF_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'ATTACH_REF' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER ContentID_OUTPUT TYPE hana_out
+TO ContentID_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'CONTENT_ID' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER ExternalURI_OUTPUT TYPE hana_out
+TO ExternalURI_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'EXTERNAL_URI' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+
+/*node arrays outputs*/	
+ATTACH OUTPUT ADAPTER NODE_TYPE_OUTPUT TYPE hana_out
+TO NODE_TYPE_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'NODE_TYPE' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+
+ATTACH OUTPUT ADAPTER SW_OUTPUT TYPE hana_out
+TO SW_Splitter_Output
+PROPERTIES
+	service = 'streaming_start_hana_service' ,
+	sourceSchema = 'WARDEN_SCHEMA' ,
+	table = 'SW' ,
+	permutation = 'VALUE=VALUE:ID=ID' ;
+	
+	
